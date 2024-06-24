@@ -1,6 +1,10 @@
 # PDF to Markdown Converter
 
+~_This project is a work in progress._~
+~_If langfuse gives errors, just remove all the langfuse code since its not mandatory to run the code._~
+
 This project provides a tool to convert PDF documents into Markdown files.
+For now it uses the Google Cloud Vision API to extract text from the PDF file.
 
 ## Installation
 
@@ -25,6 +29,18 @@ brew update
 brew install gs graphicsmagick
 ```
 
+Setup your environment variables:
+
+```sh
+GOOGLE_API_KEY=<your-google-api-key>
+```
+
 ## API
 
-`/api/convertpdf2md` - Converts a PDF file to a Markdown file.
+`/api/convertpdf2md` - Converts a local PDF file to a Markdown file, the pdf must be in the root folder of the project.
+
+example:
+
+```sh
+curl -X POST http://localhost:3001/api/convertpdf2md -H "Content-Type: application/json" -d '{"file": "example.pdf"}'
+```
