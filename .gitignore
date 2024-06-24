@@ -1,0 +1,20 @@
+# Personal
+NOTES.md
+SCHEMA.md
+API.http
+/*.txt
+/*.js
+/*.sh
+/*.pdf
+images
+md
+
+# Standard
+node_modules
+.DS_Store
+dist
+dist-ssr
+coverage
+*.local
+.env
+.lasts*

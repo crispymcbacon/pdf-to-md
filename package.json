@@ -1,0 +1,32 @@
+{
+  "name": "pdf-to-md",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "serve": "node --watch server/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cors": "^9.0.1",
+    "@langchain/core": "^0.2.9",
+    "@langchain/google-genai": "^0.0.21",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.28.0",
+    "langchain": "^0.2.6",
+    "langfuse-langchain": "^3.12.2",
+    "pdf2pic": "^3.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.5.0",
+    "prettier": "^3.3.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@langchain/core": "^0.2.9"
+    }
+  }
+}
