@@ -7,7 +7,7 @@ _If `langfuse` gives errors, just remove all the langfuse code since its not man
 This project provides a tool to convert PDF documents into Markdown files using LLMs with vision API.
 
 It convert each page of the PDF file into an image and then extracts the content from the image.\
-For now it uses the Google Cloud Vision API to extract text from the PDF file.
+For now it uses the Gemini 1.5 Flash Vision API to extract text from the PDF file.
 
 ## Installation
 
