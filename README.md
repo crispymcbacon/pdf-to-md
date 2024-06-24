@@ -1,9 +1,12 @@
 # PDF to Markdown Converter
 
-~_This project is a work in progress._~
-~_If langfuse gives errors, just remove all the langfuse code since its not mandatory to run the code._~
+NOTE:\
+_This project is a work in progress._\
+_If `langfuse` gives errors, just remove all the langfuse code since its not mandatory to run the code._
 
-This project provides a tool to convert PDF documents into Markdown files.
+This project provides a tool to convert PDF documents into Markdown files using LLMs with vision API.
+
+It convert each page of the PDF file into an image and then extracts the content from the image.\
 For now it uses the Google Cloud Vision API to extract text from the PDF file.
 
 ## Installation
