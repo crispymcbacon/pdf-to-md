@@ -51,7 +51,13 @@ async function api(fastify, options) {
     return { response: "Markdown reorganized." };
   });
 
-  
+  fastify.post("/imagegoal", async (request, reply) => {
+    const { filename, goal } = request.body;
+
+    const res = await imageGoal(filename, goal);
+
+    return { response: res };
+  });
 }
 
 export default api;

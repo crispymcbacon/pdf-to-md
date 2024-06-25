@@ -237,4 +237,60 @@ The final output should be optimized to facilitate studying and enable quick com
   }
 }
 
+export async function imageGoal(filename, goal) {
+  // check if the file ends with .jpg and exists
+  if (!filename.toLowerCase().endsWith(".jpg")) {
+    throw new Error("Invalid file format. Please provide a .jpg file.");
+  }
+  if (fs.existsSync(`./images/${filename}`)) {
+    // Read the image
+    const image = fs.readFileSync(`./images/${filename}`).toString("base64");
 
+    // initialize the model
+    const model = new ChatGoogleGenerativeAI({
+      model: "gemini-1.5-flash",
+    });
+
+    // System message
+    const systemTemplate = `
+      You are an AI assistant for a Management Software for Furniture Stores called AppDelMobile, its a web based app accessible via web browser. 
+      
+      Your task is to analyze the screenshot provided by the user and extract the relevant information to help the user achieve their goal.
+  
+      The user will provide a goal or task related to the screenshot, and you must identify the necessary information to accomplish that goal.
+  
+      You must make refence to the screenshot in your response, and provide clear and actionable steps to guide the user through the process.
+  
+      Be short and concise in your responses, focusing on the key details that will help the user achieve their objective.
+  
+      Answer in italian.
+    `;
+    const promptTemplate = ChatPromptTemplate.fromMessages([
+      ["system", systemTemplate],
+      new MessagesPlaceholder("msgs"),
+    ]);
+
+    const parser = new StringOutputParser();
+    const chain = promptTemplate.pipe(model).pipe(parser);
+
+    const res = await chain.invoke(
+      {
+        msgs: new HumanMessage({
+          content: [
+            {
+              type: "text",
+              text: goal,
+            },
+            {
+              type: "image_url",
+              image_url: `data:image/jpeg;base64,${image}`,
+            },
+          ],
+        }),
+      },
+      { callbacks: [langfuseHandler] }
+    );
+
+    return res;
+  }
+}
