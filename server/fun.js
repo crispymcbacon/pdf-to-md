@@ -1,8 +1,13 @@
 import { fromPath } from "pdf2pic";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
+import {
+  ChatPromptTemplate,
+  MessagesPlaceholder,
+} from "@langchain/core/prompts";
 import { CallbackHandler } from "langfuse-langchain";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+
 import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
@@ -34,7 +39,6 @@ export async function convertPdfToImages(
 export async function imageToMd(filepath) {
   const model = new ChatGoogleGenerativeAI({
     model: "gemini-1.5-flash",
-    maxOutputTokens: 2048,
   });
 
   if (!filepath.toLowerCase().endsWith(".jpg")) {
@@ -145,10 +149,10 @@ function chunkArray(array, chunkSize) {
 // Define the main function to process the PDF
 export async function processPdfToMarkdown(pdfFilepath, markdownFilename) {
   try {
-    // Step 2.1: Convert PDF to images
+    // Convert PDF to images
     const images = await convertPdfToImages(pdfFilepath);
 
-    // Step 2.2: Chunk the images into batches of 50
+    // Chunk the images into batches of 50
     const imageChunks = chunkArray(images, 50);
 
     for (let chunkIndex = 0; chunkIndex < imageChunks.length; chunkIndex++) {
@@ -157,21 +161,21 @@ export async function processPdfToMarkdown(pdfFilepath, markdownFilename) {
         `Processing chunk ${chunkIndex + 1} with ${imageChunk.length} images`
       );
 
-      // Step 2.3: Process all images in parallel
+      // Process all images in parallel
       const markdownPromises = imageChunk.map(async (image) => {
         console.log(`Processing image: ${image.name}`);
         return imageToMd(image.name);
       });
 
-      // Step 2.4: Wait for all promises to resolve
+      // Wait for all promises to resolve
       const markdownContent = await Promise.all(markdownPromises);
 
-      // Step 2.5: Join all markdown content into a single string
+      // Join all markdown content into a single string
       const finalMarkdown = markdownContent.join("\n\n");
 
       console.log(`Final Markdown for chunk ${chunkIndex + 1}:`, finalMarkdown);
 
-      // Step 2.6: Write the final markdown to a file
+      // Write the final markdown to a file
       const filename = `${markdownFilename}_part${chunkIndex + 1}`;
       await writeMdToFile(finalMarkdown, filename);
       console.log(`Markdown written to ${filename}.md`);
@@ -179,10 +183,58 @@ export async function processPdfToMarkdown(pdfFilepath, markdownFilename) {
 
     // delete all images
     images.forEach((image) => {
-      console.log(`Deleting image: ${image.name}`);
       fs.unlinkSync(`./images/${image.name}`);
     });
   } catch (error) {
     console.error("Error processing PDF to Markdown:", error);
   }
 }
+
+export async function organizeMarkdown(filename) {
+  // check if the file ends with .md and exists
+  if (!filename.toLowerCase().endsWith(".md")) {
+    throw new Error("Invalid file format. Please provide a .md file.");
+  }
+  if (fs.existsSync(`./md/${filename}`)) {
+    // Read the file
+    const md = fs.readFileSync(`./md/${filename}`, "utf8");
+
+    // initialize the model
+    const model = new ChatGoogleGenerativeAI({
+      model: "gemini-1.5-flash",
+    });
+
+    const systemTemplate = `
+You are a Markdown optimization assistant designed to enhance readability and learning efficiency. Your task is to take the user's Markdown content and transform it into a more organized and comprehensible format.
+
+Begin by establishing a clear and consistent structure throughout the document. Break down the information into logical sections using headings and subheadings. Ensure readability by incorporating bullet points, numbered lists, and concise paragraphs where appropriate.
+
+All information from the original Markdown must be preserved, with no content removed. Mathematical formulas and expressions should remain unaltered.
+
+Identify and bold crucial keywords or key phrases that are essential for understanding the material. Emphasize terms that are particularly important for studying.
+
+The final output should be optimized to facilitate studying and enable quick comprehension of the key arguments and concepts presented in the text.
+
+`;
+    const promptTemplate = ChatPromptTemplate.fromMessages([
+      ["system", systemTemplate],
+      ["user", "{markdown}"],
+    ]);
+
+    const parser = new StringOutputParser();
+    const chain = promptTemplate.pipe(model).pipe(parser);
+
+    const res = await chain.invoke(
+      { markdown: md },
+      { callbacks: [langfuseHandler] }
+    );
+
+    // Write the final markdown to a file
+    await writeMdToFile(res, "out");
+    console.log(`Markdown written to out.md`);
+  } else {
+    throw new Error("File not found.");
+  }
+}
+
+

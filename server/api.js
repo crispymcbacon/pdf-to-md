@@ -4,6 +4,8 @@ import {
   imageToMd,
   writeMdToFile,
   processPdfToMarkdown,
+  organizeMarkdown,
+  imageGoal,
 } from "./fun.js";
 
 dotenv.config();
@@ -40,6 +42,16 @@ async function api(fastify, options) {
 
     return { response: "PDF converted to Markdown." };
   });
+
+  fastify.post("/organizemd", async (request, reply) => {
+    const { file } = request.body;
+
+    await organizeMarkdown(file);
+
+    return { response: "Markdown reorganized." };
+  });
+
+  
 }
 
 export default api;
