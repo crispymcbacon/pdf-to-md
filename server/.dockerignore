@@ -1,0 +1,38 @@
+# Personal
+README.md
+NOTES.md
+API.http
+tmp/
+md/
+/*.txt
+/*.sh
+/*.pdf
+compose.yml
+Dockerfile
+.dockerignore
+.gitattributes
+.npmrc
+.prettierrc
+.eslintrc.cjs
+.graphqlrc
+.editorconfig
+.svelte-kit
+.vscode
+
+# Development files
+node_modules
+npm-debug.log
+.DS_Store
+.env
+.git
+.gitignore
+*.local
+.lasts*
+**/.env
+
+# Build files
+dist
+dist-ssr
+coverage
+build
+package

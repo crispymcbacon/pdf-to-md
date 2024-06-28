@@ -1,0 +1,22 @@
+# Personal
+NOTES.md
+SCHEMA.md
+API.http
+/*.txt
+/*.js
+/*.sh
+/*.pdf
+md
+out
+tmp
+compose.yml
+
+# Standard
+node_modules
+.DS_Store
+dist
+dist-ssr
+coverage
+*.local
+.env
+.lasts*

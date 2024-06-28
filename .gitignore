@@ -1,13 +1,7 @@
-# Personal
+.env
 NOTES.md
-SCHEMA.md
-API.http
-/*.txt
-/*.js
-/*.sh
-/*.pdf
-images
-md
+rsyncignore.txt
+nginx.conf
 
 # Standard
 node_modules
